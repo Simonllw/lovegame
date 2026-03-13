@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>王曼琦小测试</title>
+
+<style>
+
+body{
+margin:0;
+height:100vh;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+background:#ffe6f0;
+font-family:Arial;
+text-align:center;
+overflow:hidden;
+}
+
+/* 标题 */
+
+h1{
+font-size:6vw;
+margin-bottom:30px;
+padding:0 20px;
+}
+
+/* 按钮 */
+
+button{
+padding:14px 36px;
+font-size:5vw;
+margin:10px;
+border:none;
+border-radius:12px;
+cursor:pointer;
+transition:0.3s;
+position:relative;
+}
+
+#yes{
+background:#ff4d88;
+color:white;
+}
+
+#no{
+background:#777;
+color:white;
+}
+
+#face{
+font-size:16vw;
+margin-top:20px;
+display:none;
+}
+
+#message{
+font-size:6vw;
+margin-top:20px;
+color:#ff2b6b;
+font-weight:bold;
+}
+
+/* 图标 */
+
+.icon{
+position:absolute;
+font-size:7vw;
+pointer-events:none;
+}
+
+/* 心跳 */
+
+.heartBeat{
+animation:beat 1s infinite;
+}
+
+@keyframes beat{
+0%{transform:scale(1)}
+50%{transform:scale(1.2)}
+100%{transform:scale(1)}
+}
+
+/* 闪光 */
+
+.sparkle{
+position:absolute;
+font-size:4vw;
+opacity:0.8;
+animation:twinkle 2s infinite;
+}
+
+@keyframes twinkle{
+0%{opacity:0.2}
+50%{opacity:1}
+100%{opacity:0.2}
+}
+
+</style>
+</head>
+
+<body>
+
+<h1 id="question"></h1>
+
+<div id="buttons">
+<button id="yes">是</button>
+<button id="no">不是</button>
+</div>
+
+<div id="face"></div>
+<div id="message"></div>
+
+<script>
+
+const questions=[
+"王曼琦是不是世界上最可爱的女人？",
+"王曼琦是不是世界上最美丽的女人？",
+"王曼琦是不是罗力文最爱的宝宝？",
+"罗力文是不是王曼琦老公？",
+"你羡慕王曼琦吗？"
+]
+
+const yesText=["是","是","是","是","羡慕"]
+const noText=["不是","不是","不是","不是","不羡慕"]
+
+let step=0
+let yesSize=1
+let noSize=1
+
+const question=document.getElementById("question")
+const yes=document.getElementById("yes")
+const no=document.getElementById("no")
+const face=document.getElementById("face")
+const message=document.getElementById("message")
+
+function loadQuestion(){
+
+question.innerText=questions[step]
+yes.innerText=yesText[step]
+no.innerText=noText[step]
+
+yesSize=1
+noSize=1
+
+yes.style.transform="scale(1)"
+no.style.transform="scale(1)"
+
+face.style.display="none"
+message.innerText=""
+
+}
+
+loadQuestion()
+
+/* 随机图案 */
+
+function randomIcons(icon,count=60){
+
+for(let i=0;i<count;i++){
+
+let e=document.createElement("div")
+e.className="icon"
+e.innerText=icon
+
+e.style.left=Math.random()*90+"vw"
+e.style.top=Math.random()*90+"vh"
+
+document.body.appendChild(e)
+
+setTimeout(()=>{e.remove()},1000)
+
+}
+
+}
+
+/* 大爱心 */
+
+function bigHeart(){
+
+const width=window.innerWidth
+const height=window.innerHeight
+
+const centerX=width/2
+const centerY=height/2
+
+let scale=Math.min(width,height)/40
+
+let t=0
+
+let timer=setInterval(()=>{
+
+let x=16*Math.pow(Math.sin(t),3)
+let y=-(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))
+
+let e=document.createElement("div")
+e.className="icon heartBeat"
+e.innerText="❤️"
+
+e.style.left=centerX + x*scale + "px"
+e.style.top=centerY + y*scale + "px"
+
+document.body.appendChild(e)
+
+t+=0.05
+
+if(t>Math.PI*2){
+
+clearInterval(timer)
+
+setTimeout(()=>{
+sparkleBackground()
+},500)
+
+}
+
+},10)
+
+}
+
+/* 背景闪光 */
+
+function sparkleBackground(){
+
+for(let i=0;i<60;i++){
+
+let s=document.createElement("div")
+
+s.className="sparkle"
+s.innerText="✨"
+
+s.style.left=Math.random()*95+"vw"
+s.style.top=Math.random()*95+"vh"
+
+document.body.appendChild(s)
+
+}
+
+}
+
+/* 不是按钮逃跑 */
+
+function moveNoButton(){
+
+const width=window.innerWidth
+const height=window.innerHeight
+
+const x=Math.random()*(width-100)
+const y=Math.random()*(height-60)
+
+no.style.position="absolute"
+no.style.left=x+"px"
+no.style.top=y+"px"
+
+}
+
+/* 鼠标接近就逃跑 */
+
+document.addEventListener("mousemove",function(e){
+
+const rect=no.getBoundingClientRect()
+
+const dx=e.clientX-(rect.left+rect.width/2)
+const dy=e.clientY-(rect.top+rect.height/2)
+
+const distance=Math.sqrt(dx*dx+dy*dy)
+
+if(distance<120){
+moveNoButton()
+}
+
+})
+
+/* 手机触摸 */
+
+document.addEventListener("touchmove",function(e){
+
+const touch=e.touches[0]
+const rect=no.getBoundingClientRect()
+
+const dx=touch.clientX-(rect.left+rect.width/2)
+const dy=touch.clientY-(rect.top+rect.height/2)
+
+const distance=Math.sqrt(dx*dx+dy*dy)
+
+if(distance<120){
+moveNoButton()
+}
+
+})
+
+/* 点击是 */
+
+yes.onclick=function(){
+
+if(step<4){
+
+randomIcons("👍",40)
+randomIcons("❤️",30)
+
+step++
+
+setTimeout(loadQuestion,1000)
+
+}else{
+
+document.getElementById("buttons").style.display="none"
+
+question.innerText="罗力文 ❤️ 王曼琦"
+question.style.fontSize="8vw"
+
+message.innerText=""
+
+bigHeart()
+
+}
+
+}
+
+/* 点击不是 */
+
+no.onclick=function(){
+
+yesSize*=1.4
+noSize*=0.6
+
+yes.style.transform="scale("+yesSize+")"
+no.style.transform="scale("+noSize+")"
+
+if(step<=1){
+
+face.innerText="😠"
+face.style.display="block"
+
+}
+
+if(step==2||step==3){
+
+face.innerText="😈"
+face.style.display="block"
+
+randomIcons("👋",50)
+
+}
+
+if(step==4){
+
+randomIcons("🙄",50)
+message.innerText="你觉得我信吗"
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
